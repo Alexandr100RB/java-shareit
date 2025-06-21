@@ -1,5 +1,7 @@
 package ru.practicum.shareit.item;
 
+import jakarta.validation.constraints.Positive;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
@@ -22,6 +24,7 @@ import static java.util.stream.Collectors.toList;
 
 @RestController
 @RequestMapping("/items")
+@Validated
 public class ItemController {
     private static final String OWNER = "X-Sharer-User-Id";
     private ItemService itemService;
@@ -38,13 +41,13 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItemById(@PathVariable Long itemId) {
+    public ItemDto getItemById(@PathVariable @Positive Long itemId) {
         return mapper.toItemDto(itemService.getItemById(itemId));
     }
 
     @ResponseBody
     @PostMapping
-    public ItemDto create(@Valid @RequestBody ItemDto itemDto, @RequestHeader(OWNER) Long ownerId) {
+    public ItemDto create(@Valid @RequestBody ItemDto itemDto, @RequestHeader(OWNER) @Positive Long ownerId) {
         Item item = null;
         if (checker.isUserExists(ownerId)) {
             item = itemService.create(mapper.toItem(itemDto, ownerId));
@@ -53,7 +56,7 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> getItemsByOwner(@RequestHeader(OWNER) Long ownerId) {
+    public List<ItemDto> getItemsByOwner(@RequestHeader(OWNER) @Positive Long ownerId) {
         return itemService.getItemsByOwner(ownerId).stream()
                 .map(mapper::toItemDto)
                 .collect(toList());
@@ -61,7 +64,7 @@ public class ItemController {
 
     @ResponseBody
     @PatchMapping("/{itemId}")
-    public ItemDto update(@RequestBody ItemDto itemDto, @PathVariable Long itemId,
+    public ItemDto update(@RequestBody ItemDto itemDto, @PathVariable @Positive Long itemId,
                           @RequestHeader(OWNER) Long ownerId) {
         Item item = null;
         if (checker.isUserExists(ownerId)) {
@@ -71,7 +74,7 @@ public class ItemController {
     }
 
     @DeleteMapping("/{itemId}")
-    public ItemDto delete(@PathVariable Long itemId, @RequestHeader(OWNER) Long ownerId) {
+    public ItemDto delete(@PathVariable Long itemId, @RequestHeader(OWNER) @Positive Long ownerId) {
         return mapper.toItemDto(itemService.delete(itemId, ownerId));
     }
 

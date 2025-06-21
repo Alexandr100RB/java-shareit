@@ -1,5 +1,7 @@
 package ru.practicum.shareit.user;
 
+import jakarta.validation.constraints.Positive;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
@@ -19,6 +21,7 @@ import static java.util.stream.Collectors.toList;
 
 @RestController
 @RequestMapping(path = "/users")
+@Validated
 public class UserController {
     private UserService userService;
     private UserMapper mapper;
@@ -40,7 +43,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public UserDto getUserById(@PathVariable Long userId) {
+    public UserDto getUserById(@PathVariable @Positive Long userId) {
         return mapper.toUserDto(userService.getUserById(userId));
     }
 
@@ -53,13 +56,13 @@ public class UserController {
 
     @ResponseBody
     @PatchMapping("/{userId}")
-    public UserDto update(@RequestBody UserDto userDto, @PathVariable Long userId) {
+    public UserDto update(@RequestBody UserDto userDto, @PathVariable @Positive Long userId) {
         User user = userService.update(mapper.toUser(userDto), userId);
         return mapper.toUserDto(user);
     }
 
     @DeleteMapping("/{userId}")
-    public UserDto delete(@PathVariable Long userId) {
+    public UserDto delete(@PathVariable @Positive Long userId) {
         UserDto userDto = mapper.toUserDto(userService.delete(userId));
         checker.deleteItemsByUser(userId);
         return userDto;
