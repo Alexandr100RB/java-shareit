@@ -1,59 +1,26 @@
 package ru.practicum.shareit.item;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exceptions.DataNotFoundException;
+import ru.practicum.shareit.comment.dto.CommentDto;
+import ru.practicum.shareit.item.dto.ItemDto;
 
 import java.util.List;
 
-@Service
-public class ItemService {
-    private ItemStorage itemStorage;
+public interface ItemService {
+    ItemDto getItemById(Long id, Long userId);
 
-    @Autowired
-    public ItemService(@Qualifier("InMemoryItemStorage") ItemStorage itemStorage) {
-        this.itemStorage = itemStorage;
-    }
+    Item findItemById(Long id);
 
-    public Item create(Item item) {
-        return itemStorage.create(item);
-    }
+    ItemDto create(ItemDto itemDto, Long ownerId);
 
-    public List<Item> getItemsByOwner(Long ownerId) {
-        return itemStorage.getItemsByOwner(ownerId);
-    }
+    List<ItemDto> getItemsByOwner(Long ownerId);
 
-    public Item getItemById(Long id) {
-        return itemStorage.getItemById(id);
-    }
+    void delete(Long itemId, Long ownerId);
 
-    public Item update(Item item, Long id) {
-        if (item.getId() == null) {
-            item.setId(id);
-        }
-        Item oldItem = itemStorage.getItemById(item.getId());
-        if (!oldItem.getOwnerId().equals(item.getOwnerId())) {
-            throw new DataNotFoundException("Предмет не найден");
-        }
-        return itemStorage.update(item);
-    }
+    List<ItemDto> getItemsBySearchQuery(String text);
 
-    public Item delete(Long itemId, Long ownerId) {
-        Item item = itemStorage.getItemById(itemId);
-        if (!item.getOwnerId().equals(ownerId)) {
-            throw new DataNotFoundException("Предмет не найден");
-        }
-        return itemStorage.delete(itemId);
-    }
+    ItemDto update(ItemDto itemDto, Long ownerId, Long itemId);
 
-    public void deleteItemsByOwner(Long ownerId) {
-        itemStorage.deleteItemsByOwner(ownerId);
-    }
+    CommentDto createComment(CommentDto commentDto, Long itemId, Long userId);
 
-    public List<Item> getItemsBySearchQuery(String text) {
-        text = text.toLowerCase();
-        return itemStorage.getItemsBySearchQuery(text);
-    }
-
+    List<CommentDto> getCommentsByItemId(Long itemId);
 }
