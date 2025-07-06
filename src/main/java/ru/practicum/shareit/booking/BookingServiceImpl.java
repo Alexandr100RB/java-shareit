@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking;
 
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public BookingDto create(BookingInputDto bookingInputDto, Long bookerId) {
 
         checker.isUserExistsForStrictCheck(bookerId);
@@ -50,6 +52,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public BookingDto update(Long bookingId, Long userId, Boolean approved) {
         checker.isUserExistsForValidation(userId);
         Booking booking = repository.findById(bookingId)

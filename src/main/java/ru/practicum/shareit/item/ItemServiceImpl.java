@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -58,6 +59,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public ItemDto create(ItemDto itemDto, Long ownerId) {
         checker.isUserExistsForStrictCheck(ownerId);
         return mapper.toItemDto(repository.save(mapper.toItem(itemDto, ownerId)));
@@ -73,6 +75,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public void delete(Long itemId, Long ownerId) {
         try {
             Item item = repository.findById(itemId)
@@ -97,6 +100,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public ItemDto update(ItemDto itemDto, Long ownerId, Long itemId) {
         checker.isUserExistsForStrictCheck(ownerId);
         Item item = repository.findById(itemId)
@@ -117,6 +121,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public CommentDto createComment(CommentDto commentDto, Long itemId, Long userId) {
         checker.isUserExistsForStrictCheck(userId);
         Comment comment = new Comment();
