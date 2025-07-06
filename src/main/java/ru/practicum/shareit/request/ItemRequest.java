@@ -1,6 +1,5 @@
 package ru.practicum.shareit.request;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
