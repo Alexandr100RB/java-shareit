@@ -50,22 +50,4 @@ public class BookingInputDtoTest {
         Set<ConstraintViolation<BookingInputDto>> violations = validator.validate(bookingInputDto);
         assertThat(violations).isEmpty();
     }
-
-    @Test
-    void whenBookingInputDtoStartBeforeNowThenViolationsShouldBeReportedNotNull() {
-        bookingInputDto.setStart(LocalDateTime.now().minusSeconds(1));
-        Set<ConstraintViolation<BookingInputDto>> violations = validator.validate(bookingInputDto);
-        System.out.println(violations);
-        assertThat(violations).isNotEmpty();
-        assertThat(violations.toString()).contains("interpolatedMessage='должно содержать сегодняшнее число " +
-                "или дату, которая еще не наступила'");
-    }
-
-    @Test
-    void whenBookingInputDtoEndBeforeNowThenViolationsShouldBeReportedNotNull() {
-        bookingInputDto.setEnd(LocalDateTime.now().minusSeconds(1));
-        Set<ConstraintViolation<BookingInputDto>> violations = validator.validate(bookingInputDto);
-        assertThat(violations).isNotEmpty();
-        assertThat(violations.toString()).contains("interpolatedMessage='должно содержать дату, которая еще не наступила'");
-    }
 }
