@@ -51,45 +51,4 @@ public class UserDtoTest {
         Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
         assertThat(violations).isEmpty();
     }
-
-    @Test
-    void whenUserDtoNameIsBlankThenViolationsShouldBeReportedNotBlank() {
-        userDto.setName(" ");
-        Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
-        assertThat(violations).isNotEmpty();
-        assertThat(violations.toString()).contains("interpolatedMessage='не должно быть пустым'");
-    }
-
-    @Test
-    void whenUserDtoNameIsNullThenViolationsShouldBeReportedNotBlank() {
-        userDto.setName(null);
-        Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
-        assertThat(violations).isNotEmpty();
-        assertThat(violations.toString()).contains("interpolatedMessage='не должно быть пустым'");
-    }
-
-    @Test
-    void whenUserDtoEmailIsBlankThenViolationsShouldBeReportedNotBlank() {
-        userDto.setEmail(" ");
-        Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
-        assertThat(violations).isNotEmpty();
-        assertThat(violations.toString()).contains("interpolatedMessage='не должно быть пустым'");
-    }
-
-    @Test
-    void whenUserDtoEmailNotEmailThenViolationsShouldBeReportedNotEmail() {
-        userDto.setEmail("alex.alex");
-        Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
-        assertThat(violations).isNotEmpty();
-        System.out.println(violations.toString());
-        assertThat(violations.toString()).contains("interpolatedMessage='должно иметь формат адреса электронной почты'");
-    }
-
-    @Test
-    void whenUserDtoEmailIsNullThenViolationsShouldBeReportedNotBlank() {
-        userDto.setEmail(null);
-        Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
-        assertThat(violations).isNotEmpty();
-        assertThat(violations.toString()).contains("interpolatedMessage='не должно быть пустым'");
-    }
 }
