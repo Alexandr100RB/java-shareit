@@ -7,7 +7,6 @@ import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.item.ItemService;
-import ru.practicum.shareit.item.ItemServiceImpl;
 
 import java.util.List;
 
@@ -18,7 +17,7 @@ public class CheckConsistencyService {
     private BookingService bookingService;
 
     @Autowired
-    public CheckConsistencyService(UserServiceImpl userService, ItemServiceImpl itemService,
+    public CheckConsistencyService(UserService userService, ItemService itemService,
                                    BookingService bookingService) {
         this.userService = userService;
         this.itemService = itemService;
@@ -40,7 +39,7 @@ public class CheckConsistencyService {
     }
 
     public boolean isItemOwner(Long itemId, Long userId) {
-        return itemService.getItemsByOwner(userId).stream()
+        return itemService.getItemsByOwner(userId, 0, null).stream()
                 .anyMatch(i -> i.getId().equals(itemId));
     }
 
