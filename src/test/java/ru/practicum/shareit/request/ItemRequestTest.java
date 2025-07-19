@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JsonTest
-class ItemRequestJsonTest {
+class ItemRequestTest {
 
     @Autowired
     private ObjectMapper objectMapper;
