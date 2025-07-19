@@ -18,7 +18,7 @@ public class CheckConsistencyService {
     private BookingService bookingService;
 
     @Autowired
-    public CheckConsistencyService(UserServiceImpl userService, ItemServiceImpl itemService,
+    public CheckConsistencyService(UserService userService, ItemService itemService,
                                    BookingService bookingService) {
         this.userService = userService;
         this.itemService = itemService;
@@ -40,7 +40,7 @@ public class CheckConsistencyService {
     }
 
     public boolean isItemOwner(Long itemId, Long userId) {
-        return itemService.getItemsByOwner(userId).stream()
+        return itemService.getItemsByOwner(userId, 0, null).stream()
                 .anyMatch(i -> i.getId().equals(itemId));
     }
 
