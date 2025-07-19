@@ -10,6 +10,7 @@ import org.springframework.boot.test.json.JsonContent;
 import jakarta.validation.*;
 
 
+import java.util.Locale;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,6 +30,7 @@ public class UserDtoTest {
 
     @BeforeEach
     void beforeEach() {
+        Locale.setDefault(Locale.ENGLISH);
         userDto = new UserDto(
                 1L,
                 "Alex",
@@ -50,5 +52,46 @@ public class UserDtoTest {
     void whenUserDtoIsValidThenViolationsShouldBeEmpty() {
         Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
         assertThat(violations).isEmpty();
+    }
+
+    @Test
+    void whenUserDtoNameIsBlankThenViolationsShouldBeReportedNotBlank() {
+        userDto.setName(" ");
+        Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
+        assertThat(violations).isNotEmpty();
+        assertThat(violations.toString()).contains("interpolatedMessage='must not be blank'");
+    }
+
+    @Test
+    void whenUserDtoNameIsNullThenViolationsShouldBeReportedNotBlank() {
+        userDto.setName(null);
+        Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
+        assertThat(violations).isNotEmpty();
+        assertThat(violations.toString()).contains("interpolatedMessage='must not be blank'");
+    }
+
+    @Test
+    void whenUserDtoEmailIsBlankThenViolationsShouldBeReportedNotBlank() {
+        userDto.setEmail(" ");
+        Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
+        assertThat(violations).isNotEmpty();
+        assertThat(violations.toString()).contains("interpolatedMessage='must not be blank'");
+    }
+
+    @Test
+    void whenUserDtoEmailNotEmailThenViolationsShouldBeReportedNotEmail() {
+        userDto.setEmail("alex.alex");
+        Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
+        assertThat(violations).isNotEmpty();
+        System.out.println(violations.toString());
+        assertThat(violations.toString()).contains("interpolatedMessage='must be a well-formed email address'");
+    }
+
+    @Test
+    void whenUserDtoEmailIsNullThenViolationsShouldBeReportedNotBlank() {
+        userDto.setEmail(null);
+        Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
+        assertThat(violations).isNotEmpty();
+        assertThat(violations.toString()).contains("interpolatedMessage='must not be blank'");
     }
 }

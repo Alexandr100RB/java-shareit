@@ -12,6 +12,7 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import java.time.LocalDateTime;
+import java.util.Locale;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,6 +31,7 @@ public class BookingInputDtoTest {
 
     @BeforeEach
     void beforeEach() {
+        Locale.setDefault(Locale.ENGLISH);
         bookingInputDto = new BookingInputDto(
                 1L,
                 LocalDateTime.of(2030,12,25,12,00),
@@ -49,5 +51,47 @@ public class BookingInputDtoTest {
     void whenBookingInputDtoIsValidThenViolationsShouldBeEmpty() {
         Set<ConstraintViolation<BookingInputDto>> violations = validator.validate(bookingInputDto);
         assertThat(violations).isEmpty();
+    }
+
+    @Test
+    void whenBookingInputDtoItemIdNotNullThenViolationsShouldBeReportedNotNull() {
+        bookingInputDto.setItemId(null);
+        Set<ConstraintViolation<BookingInputDto>> violations = validator.validate(bookingInputDto);
+        assertThat(violations).isNotEmpty();
+        assertThat(violations.toString()).contains("interpolatedMessage='must not be null'");
+    }
+
+    @Test
+    void whenBookingInputDtoStartNotNullThenViolationsShouldBeReportedNotNull() {
+        bookingInputDto.setStart(null);
+        Set<ConstraintViolation<BookingInputDto>> violations = validator.validate(bookingInputDto);
+        assertThat(violations).isNotEmpty();
+        assertThat(violations.toString()).contains("interpolatedMessage='must not be null'");
+    }
+
+    @Test
+    void whenBookingInputDtoEndNotNullThenViolationsShouldBeReportedNotNull() {
+        bookingInputDto.setEnd(null);
+        Set<ConstraintViolation<BookingInputDto>> violations = validator.validate(bookingInputDto);
+        assertThat(violations).isNotEmpty();
+        assertThat(violations.toString()).contains("interpolatedMessage='must not be null'");
+    }
+
+    @Test
+    void whenBookingInputDtoStartBeforeNowThenViolationsShouldBeReportedNotNull() {
+        bookingInputDto.setStart(LocalDateTime.now().minusSeconds(1));
+        Set<ConstraintViolation<BookingInputDto>> violations = validator.validate(bookingInputDto);
+        System.out.println(violations);
+        assertThat(violations).isNotEmpty();
+        assertThat(violations.toString()).contains("interpolatedMessage='must be " +
+                "a date in the present or in the future'");
+    }
+
+    @Test
+    void whenBookingInputDtoEndBeforeNowThenViolationsShouldBeReportedNotNull() {
+        bookingInputDto.setEnd(LocalDateTime.now().minusSeconds(1));
+        Set<ConstraintViolation<BookingInputDto>> violations = validator.validate(bookingInputDto);
+        assertThat(violations).isNotEmpty();
+        assertThat(violations.toString()).contains("interpolatedMessage='must be a future date'");
     }
 }
