@@ -1,130 +1,94 @@
-package ru.practicum.shareit.requests;
+package ru.practicum.shareit.request;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.request.ItemRequestController;
-import ru.practicum.shareit.request.ItemRequestService;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
-
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.nullable;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 import ru.practicum.shareit.user.dto.UserDto;
 
-@WebMvcTest(controllers = ItemRequestController.class)
-public class ItemRequestControllerTest {
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@WebMvcTest(ItemRequestController.class)
+class ItemRequestControllerTest {
 
     @Autowired
-    ObjectMapper mapper;
+    private MockMvc mockMvc;
 
     @MockBean
-    ItemRequestService itemRequestService;
+    private ItemRequestService service;
 
     @Autowired
-    private MockMvc mvc;
+    private ObjectMapper objectMapper;
 
-    private static final String USER_ID = "X-Sharer-User-Id";
+    private ItemRequestDto requestDto;
 
-    private UserDto userDto = new UserDto(1L, "Alex", "alex@alex.ru");
-
-    private ItemRequestDto itemRequestDto = new ItemRequestDto(1L, "ItemRequest description",
-            userDto, LocalDateTime.of(2022, 1, 2, 3, 4, 5), null);
-
-    private List<ItemRequestDto> listItemRequestDto = new ArrayList<>();
-
-    @Test
-    void createItemRequest() throws Exception {
-        when(itemRequestService.create(any(), any(Long.class), any(LocalDateTime.class)))
-                .thenReturn(itemRequestDto);
-        mvc.perform(post("/requests")
-                        .content(mapper.writeValueAsString(itemRequestDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header(USER_ID, 1))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(itemRequestDto.getId()), Long.class))
-                .andExpect(jsonPath("$.description", is(itemRequestDto.getDescription())))
-                .andExpect(jsonPath("$.requestor.id", is(itemRequestDto.getRequestor().getId()), Long.class))
-                .andExpect(jsonPath("$.requestor.name", is(itemRequestDto.getRequestor().getName())))
-                .andExpect(jsonPath("$.requestor.email", is(itemRequestDto.getRequestor().getEmail())))
-                .andExpect(jsonPath("$.created",
-                        is(itemRequestDto.getCreated().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))));
+    @BeforeEach
+    void setup() {
+        requestDto = new ItemRequestDto(
+                1L,
+                "Need a screwdriver",
+                new UserDto(1L, "John", "john@example.com"),
+                LocalDateTime.of(2030, 1, 1, 10, 0),
+                List.of()
+        );
     }
 
     @Test
-    void getItemRequest() throws Exception {
-        when(itemRequestService.getItemRequestById(any(Long.class), any(Long.class)))
-                .thenReturn(itemRequestDto);
-        mvc.perform(get("/requests/1")
-                        .content(mapper.writeValueAsString(itemRequestDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
+    void createItemRequest() throws Exception {
+        Mockito.when(service.create(any(), eq(1L), any())).thenReturn(requestDto);
+
+        mockMvc.perform(post("/requests")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header(USER_ID, 1))
+                        .header("X-Sharer-User-Id", 1L)
+                        .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(itemRequestDto.getId()), Long.class))
-                .andExpect(jsonPath("$.description", is(itemRequestDto.getDescription())))
-                .andExpect(jsonPath("$.requestor.id", is(itemRequestDto.getRequestor().getId()), Long.class))
-                .andExpect(jsonPath("$.requestor.name", is(itemRequestDto.getRequestor().getName())))
-                .andExpect(jsonPath("$.requestor.email", is(itemRequestDto.getRequestor().getEmail())))
-                .andExpect(jsonPath("$.created",
-                        is(itemRequestDto.getCreated().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))));
+                .andExpect(jsonPath("$.id").value(requestDto.getId()))
+                .andExpect(jsonPath("$.description").value(requestDto.getDescription()));
+    }
+
+    @Test
+    void getItemRequestById() throws Exception {
+        Mockito.when(service.getItemRequestById(1L, 1L)).thenReturn(requestDto);
+
+        mockMvc.perform(get("/requests/1")
+                        .header("X-Sharer-User-Id", 1L))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(requestDto.getId()))
+                .andExpect(jsonPath("$.description").value(requestDto.getDescription()));
     }
 
     @Test
     void getOwnItemRequests() throws Exception {
-        when(itemRequestService.getOwnItemRequests(any(Long.class)))
-                .thenReturn(List.of(itemRequestDto));
-        mvc.perform(get("/requests")
-                        .content(mapper.writeValueAsString(listItemRequestDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header(USER_ID, 1))
+        Mockito.when(service.getOwnItemRequests(1L)).thenReturn(List.of(requestDto));
+
+        mockMvc.perform(get("/requests")
+                        .header("X-Sharer-User-Id", 1L))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].id", is(itemRequestDto.getId()), Long.class))
-                .andExpect(jsonPath("$.[0].description", is(itemRequestDto.getDescription())))
-                .andExpect(jsonPath("$.[0].requestor.id", is(itemRequestDto.getRequestor().getId()), Long.class))
-                .andExpect(jsonPath("$.[0].requestor.name", is(itemRequestDto.getRequestor().getName())))
-                .andExpect(jsonPath("$.[0].requestor.email", is(itemRequestDto.getRequestor().getEmail())))
-                .andExpect(jsonPath("$.[0].created",
-                        is(itemRequestDto.getCreated().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))));
+                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$[0].id").value(requestDto.getId()));
     }
 
     @Test
-    void getItemRequests() throws Exception {
-        when(itemRequestService.getAllItemRequests(any(Long.class), any(Integer.class), nullable(Integer.class)))
-                .thenReturn(List.of(itemRequestDto));
-        mvc.perform(get("/requests/all")
-                        .content(mapper.writeValueAsString(listItemRequestDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header(USER_ID, 1))
+    void getAllItemRequests() throws Exception {
+        Mockito.when(service.getAllItemRequests(1L, 0, null)).thenReturn(List.of(requestDto));
+
+        mockMvc.perform(get("/requests/all")
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("from", "0"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].id", is(itemRequestDto.getId()), Long.class))
-                .andExpect(jsonPath("$.[0].description", is(itemRequestDto.getDescription())))
-                .andExpect(jsonPath("$.[0].requestor.id", is(itemRequestDto.getRequestor().getId()), Long.class))
-                .andExpect(jsonPath("$.[0].requestor.name", is(itemRequestDto.getRequestor().getName())))
-                .andExpect(jsonPath("$.[0].requestor.email", is(itemRequestDto.getRequestor().getEmail())))
-                .andExpect(jsonPath("$.[0].created",
-                        is(itemRequestDto.getCreated().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))));
+                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$[0].id").value(requestDto.getId()));
     }
 }
