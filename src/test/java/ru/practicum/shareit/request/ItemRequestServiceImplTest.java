@@ -27,7 +27,6 @@ public class ItemRequestServiceImplTest {
     @Mock
     private CheckConsistencyService checkConsistencyService;
     private ItemRequestService itemRequestService;
-    private ItemRequestMapper itemRequestMapper;
 
     private UserDto userDto = new UserDto(1L, "Alex", "alex@alex.ru");
 
