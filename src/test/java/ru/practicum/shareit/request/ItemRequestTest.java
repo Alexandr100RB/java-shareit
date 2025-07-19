@@ -37,18 +37,17 @@ class ItemRequestTest {
 
     @Test
     void shouldDeserializeItemRequest() throws Exception {
-        String json = """
-            {
-              "id": 1,
-              "description": "Looking for a cordless drill",
-              "requestor": {
-                "id": 10,
-                "name": "Alice",
-                "email": "alice@example.com"
-              },
-              "created": "2030-12-25T15:30:00"
-            }
-            """;
+        String json = "{\n" +
+                "  \"id\": 1,\n" +
+                "  \"description\": \"Looking for a cordless drill\",\n" +
+                "  \"requestor\": {\n" +
+                "    \"id\": 10,\n" +
+                "    \"name\": \"Alice\",\n" +
+                "    \"email\": \"alice@example.com\"\n" +
+                "  },\n" +
+                "  \"created\": \"2030-12-25T15:30:00\"\n" +
+                "}";
+
 
         ItemRequest request = objectMapper.readValue(json, ItemRequest.class);
 
