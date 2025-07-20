@@ -13,8 +13,10 @@
 	<artifactId>shareit</artifactId>
 	<packaging>pom</packaging>
 	<modules>
-		<module>java-shareit</module>
+		<module>server</module>
+		<module>gateway</module>
 	</modules>
+
 	<version>0.0.1-SNAPSHOT</version>
 
 	<name>ShareIt</name>
