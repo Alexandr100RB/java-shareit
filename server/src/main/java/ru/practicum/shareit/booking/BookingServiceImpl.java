@@ -116,7 +116,7 @@ public class BookingServiceImpl implements BookingService {
         checker.isUserExistsForStrictCheck(userId);
         List<BookingDto> listBookingDto = new ArrayList<>();
         Pageable pageable;
-        Sort sort = Sort.by(Sort.Direction.DESC, "start");;
+        Sort sort = Sort.by(Sort.Direction.DESC, "start");
         Page<Booking> page;
         Pagination pager = new Pagination(from, size);
 
@@ -177,7 +177,7 @@ public class BookingServiceImpl implements BookingService {
         checker.isUserExistsForStrictCheck(userId);
         List<BookingDto> listBookingDto = new ArrayList<>();
         Pageable pageable;
-        Sort sort = Sort.by(Sort.Direction.DESC, "start");;
+        Sort sort = Sort.by(Sort.Direction.DESC, "start");
         Page<Booking> page;
         Pagination pager = new Pagination(from, size);
 

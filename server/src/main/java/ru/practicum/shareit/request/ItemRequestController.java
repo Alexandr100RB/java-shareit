@@ -1,7 +1,9 @@
 package ru.practicum.shareit.request;
 
+import jakarta.validation.constraints.Positive;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 
@@ -10,6 +12,7 @@ import java.util.List;
 
 
 @Slf4j
+@Validated
 @RestController
 @RequestMapping(path = "/requests")
 public class ItemRequestController {
@@ -24,31 +27,26 @@ public class ItemRequestController {
     @ResponseBody
     @PostMapping
     public ItemRequestDto create(@RequestBody ItemRequestDto itemRequestDto,
-                                 @RequestHeader(USER_ID) Long requestorId) {
-        log.info("Получен POST-запрос к эндпоинту: '/requests' " +
-                "на создание запроса вещи от пользователя с ID={}", requestorId);
+                                 @RequestHeader(USER_ID) @Positive Long requestorId) {
+        log.info("Создан запрос вещи от пользователя с id={}", requestorId);
         return service.create(itemRequestDto, requestorId, LocalDateTime.now());
     }
 
     @GetMapping("/{requestId}")
-    public ItemRequestDto getItemRequestById(@PathVariable("requestId") Long itemRequestId, @RequestHeader(USER_ID) Long userId) {
-        log.info("Получен GET-запрос к эндпоинту: '/requests' на получение запроса с ID={}", itemRequestId);
+    public ItemRequestDto getItemRequestById(@PathVariable("requestId") @Positive Long itemRequestId,
+                                             @RequestHeader(USER_ID) @Positive Long userId) {
         return service.getItemRequestById(itemRequestId, userId);
     }
 
     @GetMapping
-    public List<ItemRequestDto> getOwnItemRequests(@RequestHeader(USER_ID) Long userId) {
-        log.info("Получен GET-запрос к эндпоинту: '/requests' на получение запросов пользователя ID={}",
-                userId);
+    public List<ItemRequestDto> getOwnItemRequests(@RequestHeader(USER_ID) @Positive Long userId) {
         return service.getOwnItemRequests(userId);
     }
 
     @GetMapping("/all")
-    public List<ItemRequestDto> getAllItemRequests(@RequestHeader(USER_ID) Long userId,
+    public List<ItemRequestDto> getAllItemRequests(@RequestHeader(USER_ID) @Positive Long userId,
                                                    @RequestParam(defaultValue = "0") Integer from,
                                                    @RequestParam(required = false) Integer size) {
-        log.info("Получен GET-запрос к эндпоинту: '/requests/all' от пользователя с ID={} на получение всех запросов",
-                userId);
         return service.getAllItemRequests(userId, from, size);
     }
 }
