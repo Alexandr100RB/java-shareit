@@ -48,18 +48,16 @@ class ItemClientTest {
                 Collections.emptyList()
         );
 
-        String jsonResponse = """
-                {
-                    "id":1,
-                    "name":"itemName",
-                    "description":"desc",
-                    "available":true,
-                    "requestId":null,
-                    "lastBooking":null,
-                    "nextBooking":null,
-                    "comments":[]
-                }
-                """;
+        String jsonResponse = "{\n" +
+                "  \"id\": 1,\n" +
+                "  \"name\": \"itemName\",\n" +
+                "  \"description\": \"desc\",\n" +
+                "  \"available\": true,\n" +
+                "  \"requestId\": null,\n" +
+                "  \"lastBooking\": null,\n" +
+                "  \"nextBooking\": null,\n" +
+                "  \"comments\": []\n" +
+                "}";
 
         server.expect(requestTo("http://localhost:9090/items"))
                 .andExpect(method(HttpMethod.POST))
@@ -76,18 +74,16 @@ class ItemClientTest {
     void shouldGetItemById() {
         Long userId = 1L;
         Long itemId = 2L;
-        String jsonResponse = """
-                {
-                    "id":2,
-                    "name":"itemName2",
-                    "description":"desc2",
-                    "available":true,
-                    "requestId":null,
-                    "lastBooking":null,
-                    "nextBooking":null,
-                    "comments":[]
-                }
-                """;
+        String jsonResponse = "{\n" +
+                "  \"id\": 2,\n" +
+                "  \"name\": \"itemName2\",\n" +
+                "  \"description\": \"desc2\",\n" +
+                "  \"available\": true,\n" +
+                "  \"requestId\": null,\n" +
+                "  \"lastBooking\": null,\n" +
+                "  \"nextBooking\": null,\n" +
+                "  \"comments\": []\n" +
+                "}";
 
         server.expect(requestTo("http://localhost:9090/items/" + itemId))
                 .andExpect(method(HttpMethod.GET))
@@ -128,18 +124,16 @@ class ItemClientTest {
         Long userId = 1L;
         Long itemId = 2L;
         ItemDto itemDto = new ItemDto(itemId, "updatedName", "updatedDesc", true, null, null, null, Collections.emptyList());
-        String jsonResponse = """
-                {
-                    "id":2,
-                    "name":"updatedName",
-                    "description":"updatedDesc",
-                    "available":true,
-                    "requestId":null,
-                    "lastBooking":null,
-                    "nextBooking":null,
-                    "comments":[]
-                }
-                """;
+        String jsonResponse = "{\n" +
+                "  \"id\": 2,\n" +
+                "  \"name\": \"updatedName\",\n" +
+                "  \"description\": \"updatedDesc\",\n" +
+                "  \"available\": true,\n" +
+                "  \"requestId\": null,\n" +
+                "  \"lastBooking\": null,\n" +
+                "  \"nextBooking\": null,\n" +
+                "  \"comments\": []\n" +
+                "}";
 
         server.expect(requestTo("http://localhost:9090/items/" + itemId))
                 .andExpect(method(HttpMethod.PATCH))
@@ -192,12 +186,10 @@ class ItemClientTest {
         Long itemId = 2L;
         CommentDto commentDto = new CommentDto(null, "comment text", null, null);
 
-        String jsonResponse = """
-                {
-                    "id":1,
-                    "text":"comment text"
-                }
-                """;
+        String jsonResponse = "{\n" +
+                "  \"id\": 1,\n" +
+                "  \"text\": \"comment text\"\n" +
+                "}";
 
         server.expect(requestTo("http://localhost:9090/items/" + itemId + "/comment"))
                 .andExpect(method(HttpMethod.POST))

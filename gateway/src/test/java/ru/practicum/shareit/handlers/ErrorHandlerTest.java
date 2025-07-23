@@ -16,7 +16,9 @@ public class ErrorHandlerTest {
     private final ErrorHandler handler = new ErrorHandler();
 
     static class Dummy {
-        public void dummyMethod(Object obj) {}
+        public void dummyMethod(Object obj) {
+
+        }
     }
 
     @Test
